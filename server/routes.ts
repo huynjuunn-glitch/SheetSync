@@ -42,16 +42,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // 구글 시트 설정 저장
+  app.post("/api/save-settings", async (req, res) => {
+    try {
+      const { apiKey, sheetId, sheetName } = req.body;
+      
+      // 임시로 환경변수에 저장 (실제로는 데이터베이스나 파일에 저장해야 함)
+      process.env.GOOGLE_API_KEY = apiKey;
+      process.env.GOOGLE_SHEET_ID = sheetId;
+      process.env.GOOGLE_SHEET_NAME = sheetName;
+      
+      res.json({ message: "설정이 저장되었습니다" });
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      res.status(500).json({ error: "설정 저장에 실패했습니다" });
+    }
+  });
+
   // Sync data from Google Sheets
   app.post("/api/sync-sheets", async (req, res) => {
     try {
       const sheetsData = await fetchGoogleSheetsData();
       const orders = convertSheetsDataToOrders(sheetsData);
       await storage.seedOrders(orders);
-      res.json({ message: "Data synced successfully", count: orders.length });
+      res.json({ message: "데이터 동기화가 완료되었습니다", count: orders.length });
     } catch (error) {
       console.error("Error syncing Google Sheets:", error);
-      res.status(500).json({ error: "Failed to sync Google Sheets data" });
+      res.status(500).json({ 
+        error: error instanceof Error ? error.message : "구글 시트 데이터 동기화에 실패했습니다" 
+      });
     }
   });
 
@@ -83,25 +102,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 async function fetchGoogleSheetsData() {
-  // Initialize Google Sheets API
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-  });
+  // 클라이언트에서 전달받은 설정 사용
+  const apiKey = process.env.GOOGLE_API_KEY;
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  const sheetName = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
 
-  const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
-  const range = process.env.GOOGLE_SHEETS_RANGE || 'Sheet1!A:K';
+  if (!apiKey || !sheetId) {
+    throw new Error('Google Sheets 설정이 필요합니다. API 키와 시트 ID를 확인해주세요.');
+  }
 
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range,
-  });
-
-  const rows = response.data.values || [];
+  const range = `${sheetName}!A:K`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+  
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('Google Sheets API 오류:', errorText);
+    throw new Error(`Google Sheets API 오류: ${response.status} ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  const rows = data.values || [];
+  
   if (rows.length === 0) {
     return [];
   }

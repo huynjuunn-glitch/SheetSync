@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Cake, Settings } from "lucide-react";
 import {
   Dialog,
@@ -9,17 +9,58 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { saveSettings, loadSettings, type GoogleSheetsSettings } from "@/lib/settings";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [googleApiKey, setGoogleApiKey] = useState("");
   const [sheetId, setSheetId] = useState("");
   const [sheetName, setSheetName] = useState("Sheet1");
+  const { toast } = useToast();
 
-  const handleSaveSettings = () => {
-    // 설정 저장 로직은 나중에 구현
-    console.log("설정 저장:", { googleApiKey, sheetId, sheetName });
-    setIsSettingsOpen(false);
+  useEffect(() => {
+    // 저장된 설정 불러오기
+    const settings = loadSettings();
+    if (settings) {
+      setGoogleApiKey(settings.apiKey);
+      setSheetId(settings.sheetId);
+      setSheetName(settings.sheetName);
+    }
+  }, []);
+
+  const handleSaveSettings = async () => {
+    try {
+      const settings: GoogleSheetsSettings = {
+        apiKey: googleApiKey,
+        sheetId,
+        sheetName,
+      };
+
+      // 로컬 스토리지에 저장
+      saveSettings(settings);
+
+      // 서버에도 저장
+      await apiRequest("POST", "/api/save-settings", {
+        apiKey: googleApiKey,
+        sheetId,
+        sheetName,
+      });
+
+      toast({
+        title: "설정 저장 완료",
+        description: "구글 시트 설정이 저장되었습니다.",
+      });
+
+      setIsSettingsOpen(false);
+    } catch (error) {
+      toast({
+        title: "설정 저장 실패",
+        description: "설정 저장에 실패했습니다.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
