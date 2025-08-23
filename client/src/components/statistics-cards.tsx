@@ -96,7 +96,7 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
       {/* Design Stats */}
       {renderStatSection(
-        "디자인별 주문 수",
+        "디자인",
         <Palette className="text-primary mr-2" size={20} />,
         statistics.designCounts,
         "bg-primary",
@@ -105,7 +105,7 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
 
       {/* Flavor Stats */}
       {renderStatSection(
-        "맛별 주문 수",
+        "맛 선택",
         <IceCream className="text-primary mr-2" size={20} />,
         statistics.flavorCounts,
         "bg-green-500",
@@ -114,7 +114,7 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
 
       {/* Size Stats */}
       {renderStatSection(
-        "사이즈별 주문 수",
+        "사이즈",
         <Ruler className="text-primary mr-2" size={20} />,
         statistics.sizeCounts,
         "bg-purple-500",
@@ -123,7 +123,7 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
 
       {/* Sheet Stats */}
       {renderStatSection(
-        "시트별 주문 수",
+        "시트",
         <Layers className="text-primary mr-2" size={20} />,
         statistics.sheetCounts,
         "bg-yellow-500",
@@ -132,46 +132,13 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
 
       {/* Cream Stats */}
       {renderStatSection(
-        "크림별 주문 수",
+        "크림",
         <Cake className="text-primary mr-2" size={20} />,
         statistics.creamCounts,
         "bg-red-500",
         "card-cream-stats"
       )}
 
-      {/* Summary Stats */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6" data-testid="card-summary-stats">
-        <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-          <TrendingUp className="text-primary mr-2" size={20} />
-          기간 요약
-        </h3>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">총 주문 건수</span>
-            <span className="text-lg font-semibold text-gray-900" data-testid="text-total-orders">
-              {statistics.totalOrders}건
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">일평균 주문</span>
-            <span className="text-lg font-semibold text-gray-900" data-testid="text-avg-orders">
-              {avgOrdersPerDay}건
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">인기 디자인</span>
-            <span className="text-sm font-medium text-primary" data-testid="text-popular-design">
-              {statistics.popularDesign || "N/A"}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">인기 사이즈</span>
-            <span className="text-sm font-medium text-primary" data-testid="text-popular-size">
-              {statistics.popularSize || "N/A"}
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

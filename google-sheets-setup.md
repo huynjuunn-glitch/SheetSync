@@ -16,10 +16,11 @@
 4. **사용자 인증 정보**에서 **API 키** 생성
 5. API 키 **제한 사항**에서 **Google Sheets API**만 허용
 
-### 3. 현재 테스트 정보
-- API 키: AIzaSyCYEMuw-k4sc_68scPThQQ7HmaKmHIn_hY
-- 시트 ID: 1j3XvcpJgjYnqcnk1WXxWv6a19ugiwhjExRRWSun52kk
-- 시트 이름: 주문정보
+### 3. 연동 설정
+앱에서 **관리자 설정** 팝업을 통해 다음 정보를 입력하세요:
+- API 키: Google Cloud Console에서 생성한 API 키
+- 시트 ID: Google Sheets URL에서 추출한 시트 ID  
+- 시트 이름: 실제 시트의 탭 이름
 
 ### 4. 시트 구조 (A열부터 K열)
 | A | B | C | D | E | F | G | H | I | J | K |

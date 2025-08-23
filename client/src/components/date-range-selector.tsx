@@ -97,7 +97,7 @@ export default function DateRangeSelector({
   };
 
   const formatDisplayDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString + 'T00:00:00');
     return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
   };
 

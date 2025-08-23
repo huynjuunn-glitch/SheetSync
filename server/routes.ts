@@ -125,9 +125,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 async function fetchGoogleSheetsData() {
   // 테스트용 정보로 설정
-  const apiKey = process.env.GOOGLE_API_KEY || 'AIzaSyCYEMuw-k4sc_68scPThQQ7HmaKmHIn_hY';
-  const sheetId = process.env.GOOGLE_SHEET_ID || '1j3XvcpJgjYnqcnk1WXxWv6a19ugiwhjExRRWSun52kk';
-  const sheetName = process.env.GOOGLE_SHEET_NAME || '주문정보';
+  const apiKey = process.env.GOOGLE_API_KEY;
+  const sheetId = process.env.GOOGLE_SHEET_ID;
+  const sheetName = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
 
   console.log('사용할 설정:', { apiKey: apiKey.substring(0, 20) + '...', sheetId, sheetName });
 
@@ -178,7 +178,7 @@ async function fetchGoogleSheetsData() {
       크림: 크림 || '',
       요청사항: 요청사항 || '',
       특이사항: 특이사항 || '',
-      주문경로: '매장방문', // 주문경로가 시트에 없어서 기본값 설정
+      주문경로: '', // 주문경로가 시트에 없어서 빈 값으로 설정
     });
   });
 }

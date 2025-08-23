@@ -128,7 +128,7 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주문일</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">픽업일</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">맛/사이즈</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주문경로</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">요청사항</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -156,9 +156,7 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
                       <div className="text-sm text-gray-500">{order.size}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getChannelBadgeClass(order.orderChannel)}`}>
-                        {order.orderChannel}
-                      </span>
+                      <div className="text-sm text-gray-900">{order.requests || '-'}</div>
                     </td>
                   </tr>
                 ))}
@@ -177,9 +175,6 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="font-medium text-gray-900">{order.customerName}</div>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getChannelBadgeClass(order.orderChannel)}`}>
-                    {order.orderChannel}
-                  </span>
                 </div>
                 <div className="text-sm text-gray-900 mb-1">{order.design}</div>
                 <div className="flex justify-between text-sm text-gray-500 mb-2">
@@ -190,6 +185,11 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
                   <div className="text-sm">
                     <span>{order.flavor}</span> • <span>{order.size}</span>
                   </div>
+                  {order.requests && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      요청: {order.requests}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
