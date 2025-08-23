@@ -62,9 +62,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Sync data from Google Sheets
   app.post("/api/sync-sheets", async (req, res) => {
     try {
+      console.log('동기화 시작...');
+      console.log('환경변수 확인:', {
+        apiKey: process.env.GOOGLE_API_KEY ? '설정됨' : '없음',
+        sheetId: process.env.GOOGLE_SHEET_ID ? '설정됨' : '없음',
+        sheetName: process.env.GOOGLE_SHEET_NAME || 'Sheet1'
+      });
+      
       const sheetsData = await fetchGoogleSheetsData();
+      console.log('시트 데이터 가져오기 완료, 행 개수:', sheetsData.length);
+      
       const orders = convertSheetsDataToOrders(sheetsData);
+      console.log('주문 데이터 변환 완료, 주문 개수:', orders.length);
+      
       await storage.seedOrders(orders);
+      console.log('저장 완료');
+      
       res.json({ message: "데이터 동기화가 완료되었습니다", count: orders.length });
     } catch (error) {
       console.error("Error syncing Google Sheets:", error);
@@ -102,37 +115,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 async function fetchGoogleSheetsData() {
-  // 클라이언트에서 전달받은 설정 사용
-  const apiKey = process.env.GOOGLE_API_KEY;
-  const sheetId = process.env.GOOGLE_SHEET_ID;
-  const sheetName = process.env.GOOGLE_SHEET_NAME || 'Sheet1';
+  // 테스트용 정보로 설정
+  const apiKey = process.env.GOOGLE_API_KEY || 'AIzaSyCYEMuw-k4sc_68scPThQQ7HmaKmHIn_hY';
+  const sheetId = process.env.GOOGLE_SHEET_ID || '1j3XvcpJgjYnqcnk1WXxWv6a19ugiwhjExRRWSun52kk';
+  const sheetName = process.env.GOOGLE_SHEET_NAME || '주문정보';
 
-  if (!apiKey || !sheetId) {
-    throw new Error('Google Sheets 설정이 필요합니다. API 키와 시트 ID를 확인해주세요.');
-  }
+  console.log('사용할 설정:', { apiKey: apiKey.substring(0, 20) + '...', sheetId, sheetName });
 
   const range = `${sheetName}!A:K`;
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
   
+  console.log('요청 URL:', url);
+  
   const response = await fetch(url);
+  
+  console.log('응답 상태:', response.status, response.statusText);
   
   if (!response.ok) {
     const errorText = await response.text();
     console.error('Google Sheets API 오류:', errorText);
-    throw new Error(`Google Sheets API 오류: ${response.status} ${response.statusText}`);
+    throw new Error(`Google Sheets API 오류: ${response.status} ${response.statusText} - ${errorText}`);
   }
   
   const data = await response.json();
+  console.log('받은 데이터:', data);
+  
   const rows = data.values || [];
   
   if (rows.length === 0) {
+    console.log('시트에 데이터가 없습니다');
     return [];
   }
+
+  console.log('첫 번째 행 (헤더):', rows[0]);
+  console.log('총 행 개수:', rows.length);
 
   // Skip header row
   const dataRows = rows.slice(1);
   
-  return dataRows.map((row: any) => {
+  return dataRows.map((row: any, index: number) => {
+    console.log(`행 ${index + 2} 처리:`, row);
     const [이름, 디자인, 주문일자, 픽업일자, 맛선택, 시트, 사이즈, 크림, 요청사항, 특이사항, 주문경로] = row;
     
     return googleSheetsRowSchema.parse({
