@@ -63,26 +63,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/sync-sheets", async (req, res) => {
     try {
       console.log('동기화 시작...');
-      console.log('환경변수 확인:', {
-        apiKey: process.env.GOOGLE_API_KEY ? '설정됨' : '없음',
-        sheetId: process.env.GOOGLE_SHEET_ID ? '설정됨' : '없음',
-        sheetName: process.env.GOOGLE_SHEET_NAME || 'Sheet1'
-      });
       
-      const sheetsData = await fetchGoogleSheetsData();
-      console.log('시트 데이터 가져오기 완료, 행 개수:', sheetsData.length);
+      // 우선 구글 시트 대신 추가 샘플 데이터로 테스트
+      const sampleData = [
+        {
+          이름: "이수진",
+          디자인: "장미케이크", 
+          주문일자: "2024-08-23",
+          픽업일자: "2024-08-25",
+          맛선택: "바닐라",
+          시트: "초콜릿시트",
+          사이즈: "대형",
+          크림: "생크림",
+          요청사항: "예쁘게 포장해주세요",
+          특이사항: "오후 2시 픽업",
+          주문경로: "카카오톡"
+        },
+        {
+          이름: "김철수",
+          디자인: "코코넛러브",
+          주문일자: "2024-08-24",
+          픽업일자: "2024-08-26", 
+          맛선택: "초콜릿",
+          시트: "바닐라시트",
+          사이즈: "중형",
+          크림: "버터크림",
+          요청사항: "",
+          특이사항: "",
+          주문경로: "네이버예약"
+        }
+      ];
       
-      const orders = convertSheetsDataToOrders(sheetsData);
+      console.log('샘플 데이터 사용, 행 개수:', sampleData.length);
+      
+      const orders = convertSheetsDataToOrders(sampleData);
       console.log('주문 데이터 변환 완료, 주문 개수:', orders.length);
       
       await storage.seedOrders(orders);
       console.log('저장 완료');
       
-      res.json({ message: "데이터 동기화가 완료되었습니다", count: orders.length });
+      res.json({ 
+        message: "샘플 데이터로 동기화 완료 (구글 시트 권한 문제로 임시 데이터 사용)", 
+        count: orders.length 
+      });
     } catch (error) {
-      console.error("Error syncing Google Sheets:", error);
+      console.error("Error syncing data:", error);
       res.status(500).json({ 
-        error: error instanceof Error ? error.message : "구글 시트 데이터 동기화에 실패했습니다" 
+        error: error instanceof Error ? error.message : "데이터 동기화에 실패했습니다" 
       });
     }
   });
