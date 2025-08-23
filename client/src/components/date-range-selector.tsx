@@ -93,12 +93,17 @@ export default function DateRangeSelector({
   };
 
   const formatDateToString = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    // 로컬 타임존을 고려한 날짜 형식 변환
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const formatDisplayDate = (dateString: string) => {
-    const date = new Date(dateString + 'T00:00:00');
-    return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
+    // YYYY-MM-DD 형식을 YYYY.MM.DD 형식으로 직접 변환
+    const [year, month, day] = dateString.split('-');
+    return `${year}.${month}.${day}`;
   };
 
   const handleDateClick = (date: Date) => {
