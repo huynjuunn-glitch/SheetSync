@@ -14,10 +14,10 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
   const { data: statistics, isLoading } = useQuery({
     queryKey: ["/api/statistics", dateRange.startDate, dateRange.endDate],
     queryFn: () => getStatistics(dateRange.startDate || undefined, dateRange.endDate || undefined),
-    enabled: Boolean(dateRange.startDate && dateRange.endDate),
+    enabled: Boolean(dateRange.startDate),
   });
 
-  if (!dateRange.startDate || !dateRange.endDate) {
+  if (!dateRange.startDate) {
     return null;
   }
 

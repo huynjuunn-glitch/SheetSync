@@ -99,8 +99,11 @@ export default function DateRangeSelector({
     const dateString = formatDateToString(date);
     
     if (!tempStartDate) {
-      // First click - set start date
+      // First click - reset any existing range and set start date
+      onDateRangeChange({ startDate: null, endDate: null });
       setTempStartDate(dateString);
+      // 첫 번째 클릭 시 바로 시작 날짜 표시
+      onDateRangeChange({ startDate: dateString, endDate: null });
     } else {
       // Second click - set end date and complete selection
       const startDate = tempStartDate;
@@ -210,14 +213,19 @@ export default function DateRangeSelector({
         <div className="space-y-4">
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="text-sm font-medium text-blue-900 mb-2">선택된 기간</h4>
-            {selectedDateRange.startDate && selectedDateRange.endDate ? (
+            {selectedDateRange.startDate ? (
               <>
                 <p className="text-sm text-blue-700" data-testid="text-selected-range">
-                  {formatDisplayDate(selectedDateRange.startDate)} - {formatDisplayDate(selectedDateRange.endDate)}
+                  {selectedDateRange.endDate 
+                    ? `${formatDisplayDate(selectedDateRange.startDate)} - ${formatDisplayDate(selectedDateRange.endDate)}`
+                    : `${formatDisplayDate(selectedDateRange.startDate)} (종료일 선택 중...)`
+                  }
                 </p>
-                <p className="text-xs text-blue-600 mt-1">
-                  총 {getDaysBetweenDates(selectedDateRange.startDate, selectedDateRange.endDate)}일 선택됨
-                </p>
+                {selectedDateRange.endDate && (
+                  <p className="text-xs text-blue-600 mt-1">
+                    총 {getDaysBetweenDates(selectedDateRange.startDate, selectedDateRange.endDate)}일 선택됨
+                  </p>
+                )}
               </>
             ) : (
               <p className="text-sm text-blue-700">날짜를 선택해주세요</p>

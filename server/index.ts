@@ -44,6 +44,12 @@ app.use((req, res, next) => {
   const server = await registerRoutes(app);
   
   async function addSampleData() {
+    // 기존 데이터가 있는지 확인
+    const existingOrders = await storage.getOrders();
+    if (existingOrders.length > 0) {
+      return; // 이미 데이터가 있으면 추가하지 않음
+    }
+
     const sampleOrders = [
       {
         customerName: "김민수",

@@ -21,7 +21,7 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["/api/orders", dateRange.startDate, dateRange.endDate],
     queryFn: () => getOrders(dateRange.startDate || undefined, dateRange.endDate || undefined),
-    enabled: Boolean(dateRange.startDate && dateRange.endDate),
+    enabled: Boolean(dateRange.startDate),
   });
 
   const filteredOrders = orders.filter((order: Order) => {
@@ -48,7 +48,7 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
     return `${date.getFullYear()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getDate().toString().padStart(2, '0')}`;
   };
 
-  if (!dateRange.startDate || !dateRange.endDate) {
+  if (!dateRange.startDate) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
         <div className="px-6 py-8 text-center">
