@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
@@ -37,7 +38,58 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // 샘플 데이터 추가
+  await addSampleData();
+  
   const server = await registerRoutes(app);
+  
+  async function addSampleData() {
+    const sampleOrders = [
+      {
+        customerName: "김민수",
+        design: "코코넛러브",
+        orderDate: "2024-08-20",
+        pickupDate: "2024-08-23",
+        flavor: "초콜릿",
+        sheet: "바닐라시트",
+        size: "대형",
+        cream: "생크림",
+        requests: "생일 축하 메시지 필요",
+        notes: "오후 3시 픽업 예정",
+        orderChannel: "네이버예약"
+      },
+      {
+        customerName: "이지은",
+        design: "리본케이크",
+        orderDate: "2024-08-21",
+        pickupDate: "2024-08-24",
+        flavor: "딸기",
+        sheet: "초콜릿시트",
+        size: "소형",
+        cream: "버터크림",
+        requests: null,
+        notes: null,
+        orderChannel: "카카오톡"
+      },
+      {
+        customerName: "박영수",
+        design: "코코넛러브",
+        orderDate: "2024-08-22",
+        pickupDate: "2024-08-25",
+        flavor: "바닐라",
+        sheet: "바닐라시트",
+        size: "중형",
+        cream: "휘핑크림",
+        requests: "포장 꼼꼼히 부탁",
+        notes: "아침 일찍 픽업",
+        orderChannel: "매장방문"
+      }
+    ];
+
+    for (const orderData of sampleOrders) {
+      await storage.createOrder(orderData);
+    }
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

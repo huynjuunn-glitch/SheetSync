@@ -109,7 +109,7 @@ async function fetchGoogleSheetsData() {
   // Skip header row
   const dataRows = rows.slice(1);
   
-  return dataRows.map(row => {
+  return dataRows.map((row: any) => {
     const [이름, 디자인, 주문일자, 픽업일자, 맛선택, 시트, 사이즈, 크림, 요청사항, 특이사항, 주문경로] = row;
     
     return googleSheetsRowSchema.parse({
