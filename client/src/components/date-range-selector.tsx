@@ -28,8 +28,14 @@ export default function DateRangeSelector({
   const syncMutation = useMutation({
     mutationFn: syncGoogleSheets,
     onSuccess: () => {
+      // 모든 관련 쿼리 캐시 무효화
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       queryClient.invalidateQueries({ queryKey: ["/api/statistics"] });
+      
+      // 강제로 새로고침
+      queryClient.refetchQueries({ queryKey: ["/api/orders"] });
+      queryClient.refetchQueries({ queryKey: ["/api/statistics"] });
+      
       toast({
         title: "데이터 동기화 완료",
         description: "Google Sheets에서 최신 데이터를 가져왔습니다.",

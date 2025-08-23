@@ -15,6 +15,8 @@ export default function StatisticsCards({ dateRange }: StatisticsCardsProps) {
     queryKey: ["/api/statistics", dateRange.startDate, dateRange.endDate],
     queryFn: () => getStatistics(dateRange.startDate || undefined, dateRange.endDate || undefined),
     enabled: Boolean(dateRange.startDate),
+    staleTime: 0, // 캐시를 즉시 만료시킴
+    cacheTime: 0, // 캐시 시간을 0으로 설정
   });
 
   if (!dateRange.startDate) {

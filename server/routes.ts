@@ -12,16 +12,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { startDate, endDate } = req.query;
       
+      console.log('API 요청 파라미터:', { startDate, endDate });
+      
+      let orders;
       if (startDate && endDate) {
-        const orders = await storage.getOrdersByDateRange(
+        orders = await storage.getOrdersByDateRange(
           startDate as string,
           endDate as string
         );
-        res.json(orders);
+        console.log('날짜 범위 필터 결과:', orders.length);
       } else {
-        const orders = await storage.getOrders();
-        res.json(orders);
+        orders = await storage.getOrders();
+        console.log('전체 주문 개수:', orders.length);
       }
+      
+      // 첫 몇 개 주문 샘플 로그
+      if (orders.length > 0) {
+        console.log('첫 번째 주문 샘플:', orders[0]);
+      }
+      
+      res.json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
       res.status(500).json({ error: "Failed to fetch orders" });
@@ -191,18 +201,29 @@ function convertSheetsDataToOrders(sheetsData: any[]): Order[] {
 }
 
 function formatDate(dateString: string): string {
-  // Convert various date formats to YYYY-MM-DD
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) {
-    // Try parsing Korean date format like "2024.12.15"
-    const koreanDateMatch = dateString.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
-    if (koreanDateMatch) {
-      const [, year, month, day] = koreanDateMatch;
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    }
-    return dateString;
+  console.log('날짜 변환 시작:', dateString);
+  
+  if (!dateString) return '';
+  
+  // Korean date format like "2025.07.25"
+  const koreanDateMatch = dateString.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})/);
+  if (koreanDateMatch) {
+    const [, year, month, day] = koreanDateMatch;
+    const formatted = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    console.log('한국 날짜 형식 변환:', dateString, '->', formatted);
+    return formatted;
   }
-  return date.toISOString().split('T')[0];
+  
+  // Try parsing as regular date
+  const date = new Date(dateString);
+  if (!isNaN(date.getTime())) {
+    const formatted = date.toISOString().split('T')[0];
+    console.log('일반 날짜 형식 변환:', dateString, '->', formatted);
+    return formatted;
+  }
+  
+  console.log('날짜 변환 실패, 원본 반환:', dateString);
+  return dateString;
 }
 
 function calculateStatistics(orders: Order[]) {

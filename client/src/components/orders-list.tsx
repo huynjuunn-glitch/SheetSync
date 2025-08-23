@@ -20,8 +20,16 @@ export default function OrdersList({ dateRange, onOrderSelect }: OrdersListProps
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["/api/orders", dateRange.startDate, dateRange.endDate],
-    queryFn: () => getOrders(dateRange.startDate || undefined, dateRange.endDate || undefined),
+    queryFn: () => {
+      console.log('주문 데이터 요청:', { 
+        startDate: dateRange.startDate, 
+        endDate: dateRange.endDate 
+      });
+      return getOrders(dateRange.startDate || undefined, dateRange.endDate || undefined);
+    },
     enabled: Boolean(dateRange.startDate),
+    staleTime: 0, // 캐시를 즉시 만료시킴
+    cacheTime: 0, // 캐시 시간을 0으로 설정
   });
 
   const filteredOrders = orders.filter((order: Order) => {
