@@ -64,46 +64,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('동기화 시작...');
       
-      // 우선 구글 시트 대신 추가 샘플 데이터로 테스트
-      const sampleData = [
-        {
-          이름: "이수진",
-          디자인: "장미케이크", 
-          주문일자: "2024-08-23",
-          픽업일자: "2024-08-25",
-          맛선택: "바닐라",
-          시트: "초콜릿시트",
-          사이즈: "대형",
-          크림: "생크림",
-          요청사항: "예쁘게 포장해주세요",
-          특이사항: "오후 2시 픽업",
-          주문경로: "카카오톡"
-        },
-        {
-          이름: "김철수",
-          디자인: "코코넛러브",
-          주문일자: "2024-08-24",
-          픽업일자: "2024-08-26", 
-          맛선택: "초콜릿",
-          시트: "바닐라시트",
-          사이즈: "중형",
-          크림: "버터크림",
-          요청사항: "",
-          특이사항: "",
-          주문경로: "네이버예약"
-        }
-      ];
+      // 실제 구글 시트 데이터 사용
+      const sheetsData = await fetchGoogleSheetsData();
+      console.log('시트 데이터 가져오기 완료, 행 개수:', sheetsData.length);
       
-      console.log('샘플 데이터 사용, 행 개수:', sampleData.length);
-      
-      const orders = convertSheetsDataToOrders(sampleData);
+      const orders = convertSheetsDataToOrders(sheetsData);
       console.log('주문 데이터 변환 완료, 주문 개수:', orders.length);
       
       await storage.seedOrders(orders);
       console.log('저장 완료');
       
       res.json({ 
-        message: "샘플 데이터로 동기화 완료 (구글 시트 권한 문제로 임시 데이터 사용)", 
+        message: "데이터 동기화가 완료되었습니다", 
         count: orders.length 
       });
     } catch (error) {
@@ -182,7 +154,8 @@ async function fetchGoogleSheetsData() {
   
   return dataRows.map((row: any, index: number) => {
     console.log(`행 ${index + 2} 처리:`, row);
-    const [이름, 디자인, 주문일자, 픽업일자, 맛선택, 시트, 사이즈, 크림, 요청사항, 특이사항, 주문경로] = row;
+    // 첫 번째 컬럼이 비어있어서 인덱스를 1부터 시작
+    const [, 이름, 디자인, 주문일자, 픽업일자, 맛선택, 시트, 사이즈, 크림, 요청사항, 특이사항] = row;
     
     return googleSheetsRowSchema.parse({
       이름: 이름 || '',
@@ -195,7 +168,7 @@ async function fetchGoogleSheetsData() {
       크림: 크림 || '',
       요청사항: 요청사항 || '',
       특이사항: 특이사항 || '',
-      주문경로: 주문경로 || '',
+      주문경로: '매장방문', // 주문경로가 시트에 없어서 기본값 설정
     });
   });
 }

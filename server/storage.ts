@@ -45,9 +45,13 @@ export class MemStorage implements IStorage {
 
   // Method to seed orders from Google Sheets data
   async seedOrders(orders: Order[]): Promise<void> {
+    // 기존 데이터 지우고 새 데이터로 교체
+    this.orders.clear();
     orders.forEach(order => {
+      console.log('저장하는 주문:', order);
       this.orders.set(order.id, order);
     });
+    console.log('저장 완료, 총 주문 수:', this.orders.size);
   }
 }
 
