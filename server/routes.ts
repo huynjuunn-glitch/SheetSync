@@ -1,8 +1,8 @@
-import type { Express } from "express";
+import express from "express";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 
-export async function registerRoutes(app: Express): Promise<void> {
+export async function registerRoutes(app: express.Express): Promise<void> {
   // Auth middleware
   await setupAuth(app);
 
