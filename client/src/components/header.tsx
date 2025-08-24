@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cake, Settings } from "lucide-react";
+import { Cake, Settings, LogIn } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -73,7 +73,16 @@ export default function Header() {
               <h1 className="text-xl font-semibold text-gray-900">케이크 주문 관리</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">관리자</span>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => alert('로그인 기능이 곧 추가될 예정입니다.')}
+                className="text-gray-600 hover:text-gray-900"
+                data-testid="button-login"
+              >
+                <LogIn size={16} className="mr-2" />
+                로그인
+              </Button>
               <button 
                 className="text-gray-400 hover:text-gray-600"
                 onClick={() => setIsSettingsOpen(true)}
