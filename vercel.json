@@ -1,6 +1,18 @@
 {
-  "buildCommand": "cd client && npm install && npx vite build",
-  "outputDirectory": "dist/public",
-  "installCommand": "npm install",
-  "framework": null
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "npx vite build",
+        "outputDirectory": "../dist/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
