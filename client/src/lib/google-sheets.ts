@@ -1,24 +1,20 @@
-import { apiRequest } from "./queryClient";
+import { 
+  syncGoogleSheets as syncDirectly, 
+  getOrders as getOrdersDirectly, 
+  getStatistics as getStatisticsDirectly,
+  saveGoogleSheetsConfig
+} from "./google-sheets-direct";
 
 export async function syncGoogleSheets() {
-  const response = await apiRequest("POST", "/api/sync-sheets");
-  return response.json();
+  return await syncDirectly();
 }
 
 export async function getOrders(startDate?: string, endDate?: string) {
-  const params = new URLSearchParams();
-  if (startDate) params.append('startDate', startDate);
-  if (endDate) params.append('endDate', endDate);
-  
-  const response = await apiRequest("GET", `/api/orders?${params}`);
-  return response.json();
+  return await getOrdersDirectly(startDate, endDate);
 }
 
 export async function getStatistics(startDate?: string, endDate?: string) {
-  const params = new URLSearchParams();
-  if (startDate) params.append('startDate', startDate);
-  if (endDate) params.append('endDate', endDate);
-  
-  const response = await apiRequest("GET", `/api/statistics?${params}`);
-  return response.json();
+  return await getStatisticsDirectly(startDate, endDate);
 }
+
+export { saveGoogleSheetsConfig };

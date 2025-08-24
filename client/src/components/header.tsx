@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { saveSettings, loadSettings, type GoogleSheetsSettings } from "@/lib/settings";
-import { apiRequest } from "@/lib/queryClient";
+import { saveGoogleSheetsConfig } from "@/lib/google-sheets-direct";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Header() {
@@ -41,8 +41,8 @@ export default function Header() {
       // 로컬 스토리지에 저장
       saveSettings(settings);
 
-      // 서버에도 저장
-      await apiRequest("POST", "/api/save-settings", {
+      // 구글 시트 설정도 저장
+      await saveGoogleSheetsConfig({
         apiKey: googleApiKey,
         sheetId,
         sheetName,
